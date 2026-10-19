@@ -1,17 +1,21 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import type { FileEntry, StudentRecord, Students } from '@/types';
+import type { DownloadFile, FileEntry, StudentRecord, Students } from '@/types';
 import { withBase } from '@/utils/base';
 import { encodePath, joinPath } from '@/utils/paths';
 
 const STUDENTS_PATH = 'students.json';
 const PUBLIC_FILES_DIR = 'public/files';
 
+const collator = new Intl.Collator('it', { numeric: true, sensitivity: 'base' });
+
 interface DirectoryPageProps {
   entries: FileEntry[];
   /** Relative directory path, empty string for the code root. */
   dir: string;
   student: StudentRecord;
+  /** Every file under this directory, for the client-side zip download. */
+  downloadFiles: DownloadFile[];
 }
 
 interface DirectoryPage {
@@ -72,14 +76,54 @@ async function listEntries(
     });
   }
 
-  const collator = new Intl.Collator('it', { numeric: true, sensitivity: 'base' });
-
   result.sort((a, b) => {
     if (a.kind !== b.kind) return a.kind === 'directory' ? -1 : 1;
     return collator.compare(a.name, b.name);
   });
 
   return result;
+}
+
+async function collectDownloadFiles(
+  root: string,
+  folder: string,
+  relativeDir: string,
+): Promise<DownloadFile[]> {
+  const baseDir = path.join(root, relativeDir);
+  const files: DownloadFile[] = [];
+
+  async function walk(currentDir: string, relative: string) {
+    const entries = await fs.readdir(currentDir, { withFileTypes: true });
+
+    for (const entry of entries) {
+      if (entry.name.startsWith('.')) continue;
+
+      const fullPath = path.join(currentDir, entry.name);
+      const child = joinPath(relative, entry.name);
+
+      if (entry.isDirectory()) {
+        await walk(fullPath, child);
+        continue;
+      }
+
+      if (!entry.isFile()) continue;
+
+      const info = await fs.stat(fullPath);
+
+      files.push({
+        name: child,
+        href: withBase(
+          `/files/${encodePath(folder)}/${encodePath(joinPath(relativeDir, child))}`,
+        ),
+        size: info.size,
+      });
+    }
+  }
+
+  await walk(baseDir, '');
+  files.sort((a, b) => collator.compare(a.name, b.name));
+
+  return files;
 }
 
 /**
@@ -121,6 +165,7 @@ export async function getDirectoryPages(): Promise<DirectoryPage[]> {
           entries: await listEntries(root, code, folder, dir),
           dir,
           student,
+          downloadFiles: await collectDownloadFiles(root, folder, dir),
         },
       });
     }

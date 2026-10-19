@@ -15,6 +15,16 @@ export interface BreadcrumbItem {
   href: string;
 }
 
+/** A file included in the client-side folder download. */
+export interface DownloadFile {
+  /** Path inside the zip, relative to the folder being downloaded. */
+  name: string;
+  /** Public URL of the file. */
+  href: string;
+  /** File size in bytes. */
+  size: number;
+}
+
 /** One entry of students.json, keyed by the folder under content/. */
 export interface StudentRecord {
   /** Access code used in the explorer URL. */
