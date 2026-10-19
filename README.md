@@ -33,15 +33,19 @@ contiene i dati dello studente e il codice di accesso.
 {
   "esempio": {
     "slug": "PRV23456",
-    "owner": "Billy Jane",
+    "owner-first-names": ["Billy"],
+    "owner-last-names": ["Jane"],
     "owner-slug": "billy-jane"
   }
 }
 ```
 
 - `slug` è il codice di accesso usato nell'URL dell'esploratore.
-- `owner` è il nome completo mostrato nella pagina.
-- `owner-slug` è la versione abbreviata mostrata nel breadcrumb.
+- `owner-first-names` e `owner-last-names` sono array: un elemento per ogni
+  nome o cognome, senza spazi. La pagina di benvenuto usa il primo nome.
+- `owner-slug` è opzionale: è la versione abbreviata mostrata nel breadcrumb.
+  Se lo ometti viene calcolato concatenando tutti i nomi e i cognomi in
+  minuscolo con `-` (gli accenti vengono normalizzati).
 
 I codici sono 8 caratteri tra `A-Z` e `2-9`, senza `I`, `O`, `0` e `1`. Devono
 restare stabili: cambiarli invalida i link già distribuiti. Anche gli

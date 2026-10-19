@@ -1,7 +1,8 @@
 {
   "esempio": {
     "slug": "PRV23456",
-    "owner": "Billy Jane",
+    "owner-first-names": ["Billy"],
+    "owner-last-names": ["Jane"],
     "owner-slug": "billy-jane"
   }
 }

@@ -1,6 +1,7 @@
 import type { Dirent } from 'node:fs';
 import { copyFile, mkdir, readFile, readdir, rm, stat } from 'node:fs/promises';
 import path from 'node:path';
+import { studentOwnerSlug } from '../src/lib/students';
 import type { Students } from '../src/types';
 
 const root = process.cwd();
@@ -162,6 +163,25 @@ async function assertNoUnlistedContent(students: Students) {
   }
 }
 
+function validateNameArray(field: string, value: unknown, folder: string) {
+  if (!Array.isArray(value) || value.length === 0) {
+    fail(`La voce "${folder}" deve avere "${field}" come array non vuoto di nomi.`);
+  }
+
+  for (const name of value) {
+    if (typeof name !== 'string' || name.trim() === '') {
+      fail(`Ogni valore di "${field}" della cartella "${folder}" deve essere una stringa non vuota.`);
+    }
+
+    if (/\s/.test(name)) {
+      fail(
+        `I valori di "${field}" della cartella "${folder}" non possono contenere spazi: ` +
+          'usa un elemento per ogni nome.',
+      );
+    }
+  }
+}
+
 async function validateStudents(students: Students) {
   const folders = Object.keys(students);
   const slugs = new Set<string>();
@@ -171,7 +191,10 @@ async function validateStudents(students: Students) {
     assertFolderPath(folder);
 
     if (typeof student !== 'object' || student === null || Array.isArray(student)) {
-      fail(`La voce "${folder}" deve essere un oggetto con slug, owner e owner-slug.`);
+      fail(
+        `La voce "${folder}" deve essere un oggetto con slug, ` +
+          'owner-first-names e owner-last-names.',
+      );
     }
 
     if (typeof student.slug !== 'string' || !CODE_PATTERN.test(student.slug)) {
@@ -187,25 +210,27 @@ async function validateStudents(students: Students) {
 
     slugs.add(student.slug);
 
-    if (typeof student.owner !== 'string' || student.owner.trim() === '') {
-      fail(`La voce "${folder}" deve avere un owner non vuoto.`);
+    validateNameArray('owner-first-names', student['owner-first-names'], folder);
+    validateNameArray('owner-last-names', student['owner-last-names'], folder);
+
+    if (student['owner-slug'] !== undefined && typeof student['owner-slug'] !== 'string') {
+      fail(`"owner-slug" della cartella "${folder}" deve essere una stringa.`);
     }
 
-    if (
-      typeof student['owner-slug'] !== 'string' ||
-      !OWNER_SLUG_PATTERN.test(student['owner-slug'])
-    ) {
+    const ownerSlug = studentOwnerSlug(student);
+
+    if (!OWNER_SLUG_PATTERN.test(ownerSlug)) {
       fail(
         `L'owner-slug della cartella "${folder}" non è valido: usa lettere minuscole, ` +
-          'numeri e trattini (es. "billy-jane").',
+          'numeri e trattini (es. "billy-jane"). Se lo ometti viene calcolato da nomi e cognomi.',
       );
     }
 
-    if (ownerSlugs.has(student['owner-slug'])) {
-      fail(`L'owner-slug "${student['owner-slug']}" è associato a più di una cartella.`);
+    if (ownerSlugs.has(ownerSlug)) {
+      fail(`L'owner-slug "${ownerSlug}" è associato a più di una cartella.`);
     }
 
-    ownerSlugs.add(student['owner-slug']);
+    ownerSlugs.add(ownerSlug);
 
     const source = path.join(contentDir, folder);
 

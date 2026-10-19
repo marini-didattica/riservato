@@ -34,10 +34,12 @@ export type DownloadTree = Record<string, DownloadFile[]>;
 export interface StudentRecord {
   /** Access code used in the explorer URL. */
   slug: string;
-  /** Full display name. */
-  owner: string;
-  /** Lowercase display slug used in the breadcrumb. */
-  'owner-slug': string;
+  /** Given names, one array element per name (no spaces). */
+  'owner-first-names': string[];
+  /** Family names, one array element per surname (no spaces). */
+  'owner-last-names': string[];
+  /** Optional lowercase display slug used in the breadcrumb (defaults to all names). */
+  'owner-slug'?: string;
 }
 
 export type Students = Record<string, StudentRecord>;
