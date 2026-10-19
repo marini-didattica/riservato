@@ -183,7 +183,7 @@ async function buildContent() {
 
   for (const [code, folder] of Object.entries(manifest)) {
     const sourceRoot = path.join(contentDir, folder);
-    const destinationRoot = path.join(publicFilesDir, code);
+    const destinationRoot = path.join(publicFilesDir, folder);
     const files = await collectFiles(sourceRoot);
 
     await mkdir(destinationRoot, { recursive: true });
@@ -204,7 +204,10 @@ async function buildContent() {
       copied += 1;
     }
 
-    console.log(`[content] ${code} -> content/${folder} (${files.length} file scansionati)`);
+    console.log(
+      `[content] ${code} -> content/${folder} -> public/files/${folder} ` +
+        `(${files.length} file scansionati)`,
+    );
   }
 
   if (skipped.size > 0) {

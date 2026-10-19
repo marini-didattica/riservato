@@ -38,13 +38,13 @@ I codici sono 8 caratteri tra `A-Z` e `2-9`, senza `I`, `O`, `0` e `1`. Devono
 restare stabili: cambiarli invalida i link già distribuiti.
 
 Il comando `bun run content:build` valida il manifest e copia i file pubblicabili
-in `public/files/<codice>/`. La build di Astro genera poi una pagina per ogni
+in `public/files/<cartella>/`. La build di Astro genera poi una pagina per ogni
 cartella:
 
 ```text
 /riservato/PRV23456/
 /riservato/PRV23456/esercizi/
-/riservato/files/PRV23456/esercizi/istruzioni.txt
+/riservato/files/esempio/esercizi/istruzioni.txt
 ```
 
 Le estensioni servibili sono elencate in `scripts/build-content.ts`. I sorgenti

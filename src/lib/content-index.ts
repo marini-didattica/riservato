@@ -32,7 +32,12 @@ async function walkDirectories(root: string, relative = ''): Promise<string[]> {
   return directories;
 }
 
-async function listEntries(root: string, code: string, relative: string): Promise<FileEntry[]> {
+async function listEntries(
+  root: string,
+  code: string,
+  folder: string,
+  relative: string,
+): Promise<FileEntry[]> {
   const entries = await fs.readdir(path.join(root, relative), { withFileTypes: true });
   const result: FileEntry[] = [];
 
@@ -62,7 +67,7 @@ async function listEntries(root: string, code: string, relative: string): Promis
       kind: 'file',
       size: info.size,
       extension: extension || null,
-      href: withBase(`/files/${code}/${encodePath(child)}`),
+      href: withBase(`/files/${encodePath(folder)}/${encodePath(child)}`),
     });
   }
 
@@ -93,14 +98,14 @@ export async function getDirectoryPages(): Promise<DirectoryPage[]> {
 
   const pages: DirectoryPage[] = [];
 
-  for (const code of Object.keys(manifest)) {
-    const root = path.join(PUBLIC_FILES_DIR, code);
+  for (const [code, folder] of Object.entries(manifest)) {
+    const root = path.join(PUBLIC_FILES_DIR, folder);
 
     try {
       await fs.access(root);
     } catch {
       throw new Error(
-        `La cartella pubblica per il codice ${code} non esiste. ` +
+        `La cartella pubblica per il codice ${code} (${folder}) non esiste. ` +
           'Esegui `bun run content:build` prima della build.',
       );
     }
@@ -111,7 +116,7 @@ export async function getDirectoryPages(): Promise<DirectoryPage[]> {
       pages.push({
         params: { code, path: dir === '' ? undefined : dir },
         props: {
-          entries: await listEntries(root, code, dir),
+          entries: await listEntries(root, code, folder, dir),
           dir,
         },
       });
