@@ -104,65 +104,6 @@ function assertFolderPath(folder: string) {
   }
 }
 
-async function hasDirectFiles(relative: string): Promise<boolean> {
-  const entries = await readdir(path.join(contentDir, relative), { withFileTypes: true });
-
-  return entries.some(
-    (entry) =>
-      entry.isFile() &&
-      !entry.name.startsWith('.') &&
-      !entry.name.startsWith('_') &&
-      !IGNORED_NAMES.has(entry.name),
-  );
-}
-
-async function collectContentDirectories(relative = ''): Promise<string[]> {
-  const directories = [relative];
-  const entries = await readdir(path.join(contentDir, relative), { withFileTypes: true });
-
-  for (const entry of entries) {
-    if (
-      !entry.isDirectory() ||
-      entry.name.startsWith('.') ||
-      entry.name.startsWith('_') ||
-      IGNORED_DIRECTORIES.has(entry.name) ||
-      IGNORED_NAMES.has(entry.name)
-    ) {
-      continue;
-    }
-
-    const child = relative ? `${relative}/${entry.name}` : entry.name;
-    directories.push(...(await collectContentDirectories(child)));
-  }
-
-  return directories;
-}
-
-async function assertNoUnlistedContent(students: Students) {
-  const folders = Object.keys(students);
-  const isInsideExposedFolder = (relative: string) =>
-    folders.some((folder) => relative === folder || relative.startsWith(`${folder}/`));
-
-  let directories: string[];
-
-  try {
-    directories = await collectContentDirectories();
-  } catch {
-    fail('La cartella content/ non esiste.');
-  }
-
-  for (const directory of directories) {
-    if (isInsideExposedFolder(directory)) continue;
-
-    if (await hasDirectFiles(directory)) {
-      fail(
-        `La cartella "content/${directory}" contiene file ma non è in students.json. ` +
-          'Aggiungi una voce oppure sposta la cartella fuori da content/.',
-      );
-    }
-  }
-}
-
 function validateNameArray(field: string, value: unknown, folder: string) {
   if (!Array.isArray(value) || value.length === 0) {
     fail(`La voce "${folder}" deve avere "${field}" come array non vuoto di nomi.`);
@@ -255,8 +196,6 @@ async function validateStudents(students: Students) {
       }
     }
   }
-
-  await assertNoUnlistedContent(students);
 }
 
 async function collectFiles(dir: string): Promise<string[]> {
