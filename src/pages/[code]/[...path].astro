@@ -1,6 +1,7 @@
 ---
 import Breadcrumbs from '@/components/Breadcrumbs.astro';
 import FileList from '@/components/FileList.astro';
+import { AREA_URL } from '@/consts';
 import PageLayout from '@/layouts/PageLayout.astro';
 import { getDirectoryPages } from '@/lib/content-index';
 import type { BreadcrumbItem } from '@/types';
@@ -21,7 +22,7 @@ const description =
     : `Contenuto della cartella ${title}.`;
 
 const crumbs: BreadcrumbItem[] = [
-  { label: 'Materiale riservato', href: withBase('/') },
+  { label: 'Materiale riservato', href: AREA_URL },
   { label: code, href: withBase(`/${code}/`) },
   ...segments.map((segment, index) => {
     const relative = segments.slice(0, index + 1).join('/');

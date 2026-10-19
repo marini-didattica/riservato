@@ -1,134 +1,22 @@
 ---
-import Button from '@/components/Button.astro';
-import Card from '@/components/Card.astro';
-import { AREA_NAME, MAIN_SITE_URL } from '@/consts';
-import PageLayout from '@/layouts/PageLayout.astro';
-import { withBase } from '@/utils/base';
+import { AREA_URL } from '@/consts';
+
+const target = AREA_URL;
 ---
 
-<PageLayout
-  title={AREA_NAME}
-  eyebrow="Marini didattica"
-  description="Inserisci il codice fornito in classe per aprire i tuoi materiali."
->
-  <div class="grid gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
-    <Card>
-      <h2 class="mb-2 text-xl font-bold">Accedi ai tuoi materiali</h2>
-      <p class="leading-relaxed text-text-secondary">
-        Ogni studente riceve un codice personale. Il codice apre una cartella in sola lettura con
-        dispense, esercizi e PDF.
-      </p>
-
-      <form
-        id="code-form"
-        data-base={withBase('/')}
-        class="mt-6 flex flex-col gap-4 sm:flex-row sm:items-end"
-        novalidate
-      >
-        <div class="flex flex-1 flex-col gap-1">
-          <label for="code" class="text-sm font-semibold">Codice</label>
-          <input
-            type="text"
-            id="code"
-            name="code"
-            required
-            autocomplete="off"
-            autocapitalize="characters"
-            spellcheck="false"
-            maxlength="12"
-            placeholder="H234HUA6"
-            aria-describedby="code-help code-error"
-            class="w-full rounded-md border border-border bg-surface px-3 py-2.5 uppercase text-text transition-colors focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/15"
-          />
-          <p id="code-help" class="text-xs text-text-secondary">
-            8 caratteri; maiuscole e minuscole sono equivalenti.
-          </p>
-          <p id="code-error" class="hidden text-xs text-error" role="alert">
-            Inserisci un codice di 8 caratteri.
-          </p>
-        </div>
-
-        <Button type="submit">Apri materiale</Button>
-      </form>
-
-      <p class="mt-4 text-xs text-text-secondary">
-        I materiali sono in sola lettura: puoi consultarli e scaricarli, ma non modificarli.
-      </p>
-    </Card>
-
-    <Card>
-      <h2 class="mb-3 text-xl font-bold">Come funziona</h2>
-      <ol class="m-0 flex list-decimal flex-col gap-3 pl-5 leading-relaxed text-text-secondary">
-        <li>Ricevi il codice dal docente.</li>
-        <li>Inseriscilo qui sopra e apri la tua cartella.</li>
-        <li>Naviga le sottocartelle e apri i file che ti servono.</li>
-      </ol>
-    </Card>
-  </div>
-
-  <div class="mt-10 flex flex-wrap items-center gap-4">
-    <Button href={MAIN_SITE_URL} variant="secondary">Torna al sito principale</Button>
-    <p class="text-sm text-text-secondary">Il codice non dà accesso a nessun'altra area del sito.</p>
-  </div>
-</PageLayout>
-
-<script>
-  const form = document.getElementById('code-form');
-  const input = document.getElementById('code');
-  const error = document.getElementById('code-error');
-
-  if (
-    form instanceof HTMLFormElement &&
-    input instanceof HTMLInputElement &&
-    error instanceof HTMLElement
-  ) {
-    const base = form.dataset.base ?? '/riservato/';
-    const codePattern = /^[A-HJ-NP-Z2-9]{8}$/;
-
-    try {
-      const saved = localStorage.getItem('riservato-code');
-
-      if (saved && !input.value) {
-        input.value = saved;
-      }
-    } catch {
-      // Ignore storage failures in restricted browsing contexts.
-    }
-
-    form.addEventListener('submit', (event) => {
-      event.preventDefault();
-
-      const code = input.value
-        .trim()
-        .toUpperCase()
-        .replace(/[^A-Z0-9]/g, '');
-
-      input.value = code;
-
-      if (!codePattern.test(code)) {
-        error.classList.remove('hidden');
-        input.setAttribute('aria-invalid', 'true');
-        input.focus();
-        return;
-      }
-
-      error.classList.add('hidden');
-      input.removeAttribute('aria-invalid');
-
-      try {
-        localStorage.setItem('riservato-code', code);
-      } catch {
-        // Ignore storage failures in restricted browsing contexts.
-      }
-
-      window.location.assign(`${base}${code}/`);
-    });
-
-    input.addEventListener('input', () => {
-      if (!error.classList.contains('hidden')) {
-        error.classList.add('hidden');
-        input.removeAttribute('aria-invalid');
-      }
-    });
-  }
-</script>
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta http-equiv="refresh" content={`0; url=${target}`} />
+    <link rel="canonical" href={target} />
+    <title>Area riservata — Marini didattica</title>
+  </head>
+  <body>
+    <p>
+      Reindirizzamento all'<a href={target}>area riservata</a>…
+    </p>
+  </body>
+</html>

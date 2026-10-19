@@ -5,3 +5,6 @@ export const SITE_DESCRIPTION =
 
 /** Public landing page of the main didactic site. */
 export const MAIN_SITE_URL = 'https://marini-didattica.github.io/';
+
+/** Reserved-area access page hosted by the main didactic site. */
+export const AREA_URL = 'https://marini-didattica.github.io/area-riservata/';

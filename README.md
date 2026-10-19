@@ -4,6 +4,10 @@ Area riservata del sito **Marini didattica**: un piccolo sito Astro che pubblica
 materiale didattico in sola lettura, organizzato per studente e accessibile
 tramite codice.
 
+La pagina di accesso vive nel sito principale, nella sezione
+[Area riservata](https://marini-didattica.github.io/area-riservata/). Questo
+repository pubblica l'esploratore dei file e il materiale vero e proprio.
+
 L'applicazione è deployata come GitHub Pages project site:
 
 ```text

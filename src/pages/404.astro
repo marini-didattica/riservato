@@ -1,7 +1,7 @@
 ---
 import Button from '@/components/Button.astro';
+import { AREA_URL } from '@/consts';
 import PageLayout from '@/layouts/PageLayout.astro';
-import { withBase } from '@/utils/base';
 ---
 
 <PageLayout
@@ -15,7 +15,7 @@ import { withBase } from '@/utils/base';
       problema continua, chiedi al docente.
     </p>
     <div class="mt-6">
-      <Button href={withBase('/')}>Inserisci un altro codice</Button>
+      <Button href={AREA_URL}>Inserisci un altro codice</Button>
     </div>
   </div>
 </PageLayout>
