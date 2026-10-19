@@ -1,7 +1,7 @@
 ---
 import Navbar from '@/components/Navbar.astro';
 import ThemeToggle from '@/components/ThemeToggle.astro';
-import { AREA_NAME, MAIN_SITE_URL, SITE_NAME } from '@/consts';
+import { MAIN_SITE_URL, SITE_NAME, navLinks } from '@/consts';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { cn } from '@/utils/cn';
 
@@ -28,7 +28,7 @@ const {
 ---
 
 <BaseLayout title={documentTitle} description={description}>
-  <Navbar slot="header" siteName={SITE_NAME} areaName={AREA_NAME}>
+  <Navbar slot="header" siteName={SITE_NAME} links={navLinks}>
     <ThemeToggle />
   </Navbar>
 
