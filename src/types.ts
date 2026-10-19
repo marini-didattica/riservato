@@ -14,3 +14,15 @@ export interface BreadcrumbItem {
   label: string;
   href: string;
 }
+
+/** One entry of students.json, keyed by the folder under content/. */
+export interface StudentRecord {
+  /** Access code used in the explorer URL. */
+  slug: string;
+  /** Full display name. */
+  owner: string;
+  /** Lowercase display slug used in the breadcrumb. */
+  'owner-slug': string;
+}
+
+export type Students = Record<string, StudentRecord>;

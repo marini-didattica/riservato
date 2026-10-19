@@ -12,8 +12,8 @@ export async function getStaticPaths() {
   return getDirectoryPages();
 }
 
-const { entries, dir } = Astro.props;
-const code = Astro.params.code as string;
+const { entries, dir, student } = Astro.props;
+const code = student.slug;
 const segments = dir.split('/').filter(Boolean);
 const title = segments.length > 0 ? segments[segments.length - 1] : 'I tuoi materiali';
 const description =

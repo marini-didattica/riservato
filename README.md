@@ -25,21 +25,32 @@ bun run preview  # anteprima della build
 
 ## Materiale e codici
 
-Il materiale vive in `content/<cartella>/`. Il file `manifest.json` associa ogni
-codice alla cartella corrispondente:
+Il materiale vive in `content/<cartella>/`. Il file `students.json` descrive
+ogni area riservata: la chiave è la cartella sotto `content/`, mentre il valore
+contiene i dati dello studente e il codice di accesso.
 
 ```json
 {
-  "PRV23456": "esempio"
+  "esempio": {
+    "slug": "PRV23456",
+    "owner": "Billy Jane",
+    "owner-slug": "billy-jane"
+  }
 }
 ```
 
-I codici sono 8 caratteri tra `A-Z` e `2-9`, senza `I`, `O`, `0` e `1`. Devono
-restare stabili: cambiarli invalida i link già distribuiti.
+- `slug` è il codice di accesso usato nell'URL dell'esploratore.
+- `owner` è il nome completo mostrato nella pagina.
+- `owner-slug` è la versione abbreviata mostrata nel breadcrumb.
 
-Il comando `bun run content:build` valida il manifest e copia i file pubblicabili
-in `public/files/<cartella>/`. La build di Astro genera poi una pagina per ogni
-cartella:
+I codici sono 8 caratteri tra `A-Z` e `2-9`, senza `I`, `O`, `0` e `1`. Devono
+restare stabili: cambiarli invalida i link già distribuiti. Anche gli
+`owner-slug` devono essere unici e usare solo lettere minuscole, numeri e
+trattini.
+
+Il comando `bun run content:build` valida `students.json` e copia i file
+pubblicabili in `public/files/<cartella>/`. La build di Astro genera poi una
+pagina per ogni cartella:
 
 ```text
 /riservato/PRV23456/
@@ -51,15 +62,15 @@ Le estensioni servibili sono elencate in `scripts/build-content.ts`. I sorgenti
 `.typ` e `.tex`, i file temporanei di LaTeX e i file che possono essere eseguiti
 nel browser (`.html`, `.js`) non vengono pubblicati.
 
-La cartella `content/esempio/` e la voce `PRV23456` sono solo una demo: puoi
-rimuoverle quando carichi il materiale reale.
+La voce `esempio` in `students.json` e la cartella `content/esempio/` sono solo
+una demo: puoi rimuoverle quando carichi il materiale reale.
 
 ## Deploy
 
 Ogni push su `main` avvia `.github/workflows/deploy.yml`, che:
 
 1. installa le dipendenze con Bun;
-2. esegue `bun run build` (validazione del manifest, staging dei file, build Astro);
+2. esegue `bun run build` (validazione di `students.json`, staging dei file, build Astro);
 3. pubblica `dist/` su GitHub Pages.
 
 Il sito è raggiungibile su
@@ -69,7 +80,7 @@ Il sito è raggiungibile su
 
 ```text
 content/         # materiale sorgente, una cartella per studente
-manifest.json    # codice -> cartella
+students.json    # cartella -> dati studente e codice di accesso
 scripts/         # validazione e staging del contenuto
 src/
 ├── components/   # componenti Astro condivisi

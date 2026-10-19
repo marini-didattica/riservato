@@ -1,16 +1,17 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import type { FileEntry } from '@/types';
+import type { FileEntry, StudentRecord, Students } from '@/types';
 import { withBase } from '@/utils/base';
 import { encodePath, joinPath } from '@/utils/paths';
 
-const MANIFEST_PATH = 'manifest.json';
+const STUDENTS_PATH = 'students.json';
 const PUBLIC_FILES_DIR = 'public/files';
 
 interface DirectoryPageProps {
   entries: FileEntry[];
   /** Relative directory path, empty string for the code root. */
   dir: string;
+  student: StudentRecord;
 }
 
 interface DirectoryPage {
@@ -86,19 +87,20 @@ async function listEntries(
  * `path: undefined` is the rest-parameter syntax for the code root page.
  */
 export async function getDirectoryPages(): Promise<DirectoryPage[]> {
-  let manifest: Record<string, string>;
+  let students: Students;
 
   try {
-    manifest = JSON.parse(await fs.readFile(MANIFEST_PATH, 'utf8')) as Record<string, string>;
+    students = JSON.parse(await fs.readFile(STUDENTS_PATH, 'utf8')) as Students;
   } catch {
     throw new Error(
-      'Impossibile leggere manifest.json. Esegui `bun run content:build` prima della build.',
+      'Impossibile leggere students.json. Esegui `bun run content:build` prima della build.',
     );
   }
 
   const pages: DirectoryPage[] = [];
 
-  for (const [code, folder] of Object.entries(manifest)) {
+  for (const [folder, student] of Object.entries(students)) {
+    const code = student.slug;
     const root = path.join(PUBLIC_FILES_DIR, folder);
 
     try {
@@ -118,6 +120,7 @@ export async function getDirectoryPages(): Promise<DirectoryPage[]> {
         props: {
           entries: await listEntries(root, code, folder, dir),
           dir,
+          student,
         },
       });
     }
