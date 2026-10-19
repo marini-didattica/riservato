@@ -14,16 +14,17 @@ export async function getStaticPaths() {
 
 const { entries, dir, student } = Astro.props;
 const code = student.slug;
+const ownerFirstName = student.owner.trim().split(/\s+/)[0] ?? student.owner;
 const segments = dir.split('/').filter(Boolean);
-const title = segments.length > 0 ? segments[segments.length - 1] : 'I tuoi materiali';
+const title = segments.length > 0 ? segments[segments.length - 1] : `Ciao ${ownerFirstName}!`;
 const description =
   segments.length === 0
-    ? `Materiale assegnato al codice ${code}.`
+    ? `Materiale di ${student.owner}, assegnato al codice ${code}.`
     : `Contenuto della cartella ${title}.`;
 
 const crumbs: BreadcrumbItem[] = [
   { label: 'Materiale riservato', href: AREA_URL },
-  { label: code, href: withBase(`/${code}/`) },
+  { label: student['owner-slug'], href: withBase(`/${code}/`) },
   ...segments.map((segment, index) => {
     const relative = segments.slice(0, index + 1).join('/');
     return {
