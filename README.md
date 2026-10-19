@@ -62,11 +62,12 @@ Le estensioni servibili sono elencate in `scripts/build-content.ts`. I sorgenti
 `.typ` e `.tex`, i file temporanei di LaTeX e i file che possono essere eseguiti
 nel browser (`.html`, `.js`) non vengono pubblicati.
 
-Ogni pagina di cartella include un pulsante **Scarica tutto** / **Scarica
-cartella**. Il download viene creato nel browser: la pagina scarica i file della
-cartella e li comprime in un archivio ZIP al momento del click. In questo modo
-non ci sono ZIP duplicati nel deployment di GitHub Pages e il limite di spazio
-del sito resta quello dei file originali.
+Ogni pagina di cartella include un pulsante **Scarica tutto**; ogni riga di
+cartella o file ha inoltre un'icona di download a destra. Il download viene
+creato nel browser: la pagina scarica i file della cartella selezionata e li
+comprime in un archivio ZIP al momento del click. In questo modo non ci sono ZIP
+duplicati nel deployment di GitHub Pages e il limite di spazio del sito resta
+quello dei file originali.
 
 La voce `esempio` in `students.json` e la cartella `content/esempio/` sono solo
 una demo: puoi rimuoverle quando carichi il materiale reale.

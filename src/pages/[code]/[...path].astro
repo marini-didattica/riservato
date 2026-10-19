@@ -7,13 +7,14 @@ import PageLayout from '@/layouts/PageLayout.astro';
 import { getDirectoryPages } from '@/lib/content-index';
 import type { BreadcrumbItem } from '@/types';
 import { withBase } from '@/utils/base';
+import { buildZipName, toDownloadSegment } from '@/utils/downloads';
 import { encodePath } from '@/utils/paths';
 
 export async function getStaticPaths() {
   return getDirectoryPages();
 }
 
-const { entries, dir, student, downloadFiles } = Astro.props;
+const { entries, dir, student, downloadTree } = Astro.props;
 const code = student.slug;
 const ownerFirstName = student.owner.trim().split(/\s+/)[0] ?? student.owner;
 const segments = dir.split('/').filter(Boolean);
@@ -23,20 +24,11 @@ const description =
     ? `Materiale di ${student.owner}, assegnato al codice ${code}.`
     : `Contenuto della cartella ${title}.`;
 
-function toZipSegment(value: string): string {
-  return (
-    value
-      .normalize('NFKD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .toLowerCase()
-      .replace(/[^a-z0-9._-]+/g, '-')
-      .replace(/^-+|-+$/g, '')
-      .slice(0, 60) || 'materiale'
-  );
-}
-
-const zipName = `${[student['owner-slug'], ...segments].map(toZipSegment).join('-')}.zip`;
+const downloadFiles = downloadTree[''] ?? [];
+const zipBaseName = [student['owner-slug'], ...segments].map(toDownloadSegment).join('-');
+const zipName = buildZipName([student['owner-slug'], ...segments]);
 const downloadLabel = 'Scarica tutto';
+const hasAnyDownloads = Object.values(downloadTree).some((files) => files.length > 0);
 
 const crumbs: BreadcrumbItem[] = [
   { label: 'Materiale riservato', href: AREA_URL },
@@ -91,6 +83,7 @@ const parentHref =
         <button
           id="download-folder"
           type="button"
+          data-download-folder=""
           data-zip-name={zipName}
           class="inline-flex cursor-pointer items-center gap-2 rounded-md border border-border px-4 py-2 text-sm font-semibold text-text transition-colors hover:bg-bg-secondary disabled:cursor-wait disabled:opacity-60"
         >
@@ -116,14 +109,14 @@ const parentHref =
     </div>
   </div>
 
-  <FileList entries={entries} />
+  <FileList entries={entries} downloadBaseName={zipBaseName} />
 
-  {downloadFiles.length > 0 && (
+  {hasAnyDownloads && (
     <script
       type="application/json"
-      id="download-folder-files"
+      id="download-tree"
       is:inline
-      set:html={JSON.stringify(downloadFiles).replace(/</g, '\\u003c')}
+      set:html={JSON.stringify(downloadTree).replace(/</g, '\\u003c')}
     ></script>
   )}
 </PageLayout>
@@ -131,21 +124,22 @@ const parentHref =
 <script>
   import { zipSync } from 'fflate';
 
-  const button = document.getElementById('download-folder');
-  const data = document.getElementById('download-folder-files');
+  const data = document.getElementById('download-tree');
 
-  if (button instanceof HTMLButtonElement && data instanceof HTMLScriptElement) {
-    const label = button.querySelector<HTMLElement>('[data-download-label]');
-    const files = JSON.parse(data.textContent ?? '[]') as Array<{
-      name: string;
-      href: string;
-      size: number;
-    }>;
+  if (data instanceof HTMLScriptElement) {
+    const tree = JSON.parse(data.textContent ?? '{}') as Record<
+      string,
+      Array<{ name: string; href: string; size: number }>
+    >;
 
-    button.addEventListener('click', async () => {
+    const downloadFolder = async (button: HTMLButtonElement) => {
+      const key = button.dataset.downloadFolder ?? '';
+      const files = tree[key] ?? [];
+
       if (files.length === 0) return;
 
-      const originalLabel = label?.textContent ?? 'Scarica';
+      const label = button.querySelector<HTMLElement>('[data-download-label]');
+      const originalLabel = label?.textContent ?? '';
       button.disabled = true;
       button.setAttribute('aria-busy', 'true');
       if (label) label.textContent = 'Preparazione…';
@@ -194,6 +188,10 @@ const parentHref =
           label.textContent = originalLabel;
         }
       }
+    };
+
+    document.querySelectorAll<HTMLButtonElement>('[data-download-folder]').forEach((button) => {
+      button.addEventListener('click', () => downloadFolder(button));
     });
   }
 </script>

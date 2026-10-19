@@ -1,6 +1,12 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import type { DownloadFile, FileEntry, StudentRecord, Students } from '@/types';
+import type {
+  DownloadFile,
+  DownloadTree,
+  FileEntry,
+  StudentRecord,
+  Students,
+} from '@/types';
 import { withBase } from '@/utils/base';
 import { encodePath, joinPath } from '@/utils/paths';
 
@@ -14,8 +20,8 @@ interface DirectoryPageProps {
   /** Relative directory path, empty string for the code root. */
   dir: string;
   student: StudentRecord;
-  /** Every file under this directory, for the client-side zip download. */
-  downloadFiles: DownloadFile[];
+  /** Files to download for this directory and each descendant directory. */
+  downloadTree: DownloadTree;
 }
 
 interface DirectoryPage {
@@ -58,6 +64,7 @@ async function listEntries(
         size: null,
         extension: null,
         href: withBase(`/${code}/${encodePath(child)}/`),
+        downloadKey: entry.name,
       });
       continue;
     }
@@ -126,6 +133,21 @@ async function collectDownloadFiles(
   return files;
 }
 
+async function collectDownloadTree(
+  root: string,
+  folder: string,
+  currentDir: string,
+): Promise<DownloadTree> {
+  const relativeDirs = await walkDirectories(path.join(root, currentDir));
+  const tree: DownloadTree = {};
+
+  for (const relative of relativeDirs) {
+    tree[relative] = await collectDownloadFiles(root, folder, joinPath(currentDir, relative));
+  }
+
+  return tree;
+}
+
 /**
  * Build one static page per directory in every student's staged content.
  * `path: undefined` is the rest-parameter syntax for the code root page.
@@ -159,13 +181,26 @@ export async function getDirectoryPages(): Promise<DirectoryPage[]> {
     const directories = await walkDirectories(root);
 
     for (const dir of directories) {
+      const entries = await listEntries(root, code, folder, dir);
+      const downloadTree = await collectDownloadTree(root, folder, dir);
+
+      for (const entry of entries) {
+        if (
+          entry.kind === 'directory' &&
+          entry.downloadKey &&
+          (downloadTree[entry.downloadKey]?.length ?? 0) === 0
+        ) {
+          entry.downloadKey = undefined;
+        }
+      }
+
       pages.push({
         params: { code, path: dir === '' ? undefined : dir },
         props: {
-          entries: await listEntries(root, code, folder, dir),
+          entries,
           dir,
           student,
-          downloadFiles: await collectDownloadFiles(root, folder, dir),
+          downloadTree,
         },
       });
     }

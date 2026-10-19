@@ -8,6 +8,8 @@ export interface FileEntry {
   extension: string | null;
   /** URL including the deployment base path. */
   href: string;
+  /** Key in the page download tree; set for downloadable directories. */
+  downloadKey?: string;
 }
 
 export interface BreadcrumbItem {
@@ -24,6 +26,9 @@ export interface DownloadFile {
   /** File size in bytes. */
   size: number;
 }
+
+/** Files to download for each directory under the current folder. */
+export type DownloadTree = Record<string, DownloadFile[]>;
 
 /** One entry of students.json, keyed by the folder under content/. */
 export interface StudentRecord {
