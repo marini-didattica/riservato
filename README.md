@@ -97,6 +97,16 @@ src/
 └── utils/        # helper (base path, classi)
 ```
 
+Le cartelle `content/typst-theme/` e `content/typst-components/` sono submodule
+Git dei pacchetti Typst condivisi. Dopo il clone:
+
+```sh
+git submodule update --init --recursive
+# per allinearli all'ultima main:
+git submodule update --remote --merge
+```
+
+
 Il tema riprende il design system di
 [marini-didattica.github.io](https://marini-didattica.github.io): stessi colori
 OKLCH, font Inter, spaziature, bordi e comportamento dark mode. Il tema scuro è

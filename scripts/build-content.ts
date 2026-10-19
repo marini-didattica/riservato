@@ -42,6 +42,12 @@ const ALLOWED_EXTENSIONS = new Set([
 
 const IGNORED_NAMES = new Set(['.DS_Store', 'Thumbs.db', '__pycache__']);
 
+/**
+ * Tooling directories under content/ that are not student material.
+ * They are git submodules with the shared Typst packages.
+ */
+const IGNORED_DIRECTORIES = new Set(['typst-theme', 'typst-components']);
+
 function fail(message: string): never {
   throw new Error(`[content] ${message}`);
 }
@@ -118,6 +124,7 @@ async function collectContentDirectories(relative = ''): Promise<string[]> {
       !entry.isDirectory() ||
       entry.name.startsWith('.') ||
       entry.name.startsWith('_') ||
+      IGNORED_DIRECTORIES.has(entry.name) ||
       IGNORED_NAMES.has(entry.name)
     ) {
       continue;
@@ -232,7 +239,12 @@ async function collectFiles(dir: string): Promise<string[]> {
   const files: string[] = [];
 
   for (const entry of entries) {
-    if (entry.name.startsWith('.') || entry.name.startsWith('_') || IGNORED_NAMES.has(entry.name)) {
+    if (
+      entry.name.startsWith('.') ||
+      entry.name.startsWith('_') ||
+      IGNORED_DIRECTORIES.has(entry.name) ||
+      IGNORED_NAMES.has(entry.name)
+    ) {
       continue;
     }
 
