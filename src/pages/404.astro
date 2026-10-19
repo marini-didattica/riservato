@@ -1,0 +1,21 @@
+---
+import Button from '@/components/Button.astro';
+import PageLayout from '@/layouts/PageLayout.astro';
+import { withBase } from '@/utils/base';
+---
+
+<PageLayout
+  title="Codice non trovato"
+  eyebrow="Materiale riservato"
+  description="Il codice non esiste oppure il materiale non è più disponibile."
+>
+  <div class="max-w-xl">
+    <p class="text-text-secondary">
+      Controlla di aver inserito il codice corretto, senza spazi e con tutti i caratteri. Se il
+      problema continua, chiedi al docente.
+    </p>
+    <div class="mt-6">
+      <Button href={withBase('/')}>Inserisci un altro codice</Button>
+    </div>
+  </div>
+</PageLayout>

@@ -19,9 +19,43 @@ bun run build    # genera dist/
 bun run preview  # anteprima della build
 ```
 
+## Materiale e codici
+
+Il materiale vive in `content/<cartella>/`. Il file `manifest.json` associa ogni
+codice alla cartella corrispondente:
+
+```json
+{
+  "PRV23456": "esempio"
+}
+```
+
+I codici sono 8 caratteri tra `A-Z` e `2-9`, senza `I`, `O`, `0` e `1`. Devono
+restare stabili: cambiarli invalida i link già distribuiti.
+
+Il comando `bun run content:build` valida il manifest e copia i file pubblicabili
+in `public/files/<codice>/`. La build di Astro genera poi una pagina per ogni
+cartella:
+
+```text
+/riservato/PRV23456/
+/riservato/PRV23456/esercizi/
+/riservato/files/PRV23456/esercizi/istruzioni.txt
+```
+
+Le estensioni servibili sono elencate in `scripts/build-content.ts`. I sorgenti
+`.typ` e `.tex`, i file temporanei di LaTeX e i file che possono essere eseguiti
+nel browser (`.html`, `.js`) non vengono pubblicati.
+
+La cartella `content/esempio/` e la voce `PRV23456` sono solo una demo: puoi
+rimuoverle quando carichi il materiale reale.
+
 ## Struttura
 
 ```text
+content/         # materiale sorgente, una cartella per studente
+manifest.json    # codice -> cartella
+scripts/         # validazione e staging del contenuto
 src/
 ├── components/   # componenti Astro condivisi
 ├── layouts/      # BaseLayout e PageLayout

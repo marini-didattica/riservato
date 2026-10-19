@@ -1,7 +1,7 @@
 ---
 import Navbar from '@/components/Navbar.astro';
 import ThemeToggle from '@/components/ThemeToggle.astro';
-import { AREA_NAME, SITE_NAME } from '@/consts';
+import { AREA_NAME, MAIN_SITE_URL, SITE_NAME } from '@/consts';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { cn } from '@/utils/cn';
 
@@ -45,6 +45,15 @@ const {
   </div>
 
   <footer slot="footer" class="border-t border-border px-6 py-8 text-center text-sm text-text-secondary">
-    <p>&copy; {new Date().getFullYear()} {SITE_NAME}.</p>
+    <p>
+      &copy; {new Date().getFullYear()} {SITE_NAME}.
+      <span aria-hidden="true" class="mx-1">·</span>
+      <a
+        href={MAIN_SITE_URL}
+        class="text-text-secondary no-underline transition-colors hover:text-accent"
+      >
+        Sito principale
+      </a>
+    </p>
   </footer>
 </BaseLayout>

@@ -1,0 +1,122 @@
+---
+import type { FileEntry } from '@/types';
+import { formatBytes } from '@/utils/format';
+
+export interface Props {
+  entries: FileEntry[];
+}
+
+const { entries } = Astro.props;
+---
+
+{entries.length === 0 ? (
+  <div class="rounded-xl border border-dashed border-border px-6 py-10 text-center text-text-secondary">
+    <p>Nessun file in questa cartella.</p>
+  </div>
+) : (
+  <div class="overflow-hidden rounded-xl border border-border bg-surface">
+    <ul role="list" class="m-0 list-none divide-y divide-border p-0">
+      {entries.map((entry) => (
+        <li>
+          <a
+            href={entry.href}
+            target={entry.kind === 'file' ? '_blank' : undefined}
+            rel={entry.kind === 'file' ? 'noopener noreferrer' : undefined}
+            class="group flex items-center gap-3 px-4 py-3 text-text no-underline transition-colors hover:bg-bg-secondary focus-visible:bg-bg-secondary"
+          >
+            <span
+              class:list={[
+                'flex size-10 shrink-0 items-center justify-center rounded-lg',
+                entry.kind === 'directory'
+                  ? 'bg-accent/10 text-accent'
+                  : 'bg-bg-secondary text-text-secondary',
+              ]}
+              aria-hidden="true"
+            >
+              {entry.kind === 'directory' ? (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  width="20"
+                  height="20"
+                >
+                  <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z" />
+                </svg>
+              ) : (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  width="20"
+                  height="20"
+                >
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z" />
+                  <path d="M14 2v6h6" />
+                </svg>
+              )}
+            </span>
+
+            <span class="min-w-0 flex-1">
+              <span
+                class:list={[
+                  'block truncate',
+                  entry.kind === 'directory' ? 'font-semibold' : 'font-medium',
+                  'group-hover:text-accent',
+                ]}
+              >
+                {entry.name}
+              </span>
+              <span class="mt-0.5 block text-xs text-text-secondary">
+                {entry.kind === 'directory'
+                  ? 'Cartella'
+                  : `${entry.extension ? `${entry.extension.toUpperCase()} · ` : ''}${formatBytes(
+                      entry.size ?? 0,
+                    )}`}
+              </span>
+            </span>
+
+            {entry.kind === 'directory' ? (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="size-4 shrink-0 text-text-secondary transition-transform group-hover:translate-x-0.5 group-hover:text-accent"
+                aria-hidden="true"
+              >
+                <path d="m9 18 6-6-6-6" />
+              </svg>
+            ) : (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="size-4 shrink-0 text-text-secondary transition-colors group-hover:text-accent"
+                aria-hidden="true"
+              >
+                <path d="M7 17 17 7" />
+                <path d="M7 7h10v10" />
+              </svg>
+            )}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+)}

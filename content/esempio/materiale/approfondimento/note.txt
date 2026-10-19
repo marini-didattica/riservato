@@ -1,0 +1,8 @@
+Materiale di approfondimento
+============================
+
+Questa è una seconda sottocartella, annidata un livello più in basso,
+per verificare la navigazione su più livelli.
+
+- Il breadcrumb deve mostrare: Materiale riservato / PROVA234 / materiale / approfondimento
+- Il link "indietro" è il breadcrumb stesso.

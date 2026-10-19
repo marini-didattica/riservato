@@ -1,0 +1,11 @@
+Istruzioni di esempio
+=====================
+
+Questa sottocartella verifica che:
+
+1. le cartelle siano raggiungibili tramite URL;
+2. il breadcrumb mostri il percorso;
+3. i file di testo possano essere aperti e scaricati.
+
+Il file "lettura facoltativa.txt" verifica anche la codifica degli spazi
+nell'URL.

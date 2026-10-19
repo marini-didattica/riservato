@@ -1,0 +1,55 @@
+---
+import Breadcrumbs from '@/components/Breadcrumbs.astro';
+import FileList from '@/components/FileList.astro';
+import PageLayout from '@/layouts/PageLayout.astro';
+import { getDirectoryPages } from '@/lib/content-index';
+import type { BreadcrumbItem } from '@/types';
+import { withBase } from '@/utils/base';
+import { encodePath } from '@/utils/paths';
+
+export async function getStaticPaths() {
+  return getDirectoryPages();
+}
+
+const { entries, dir } = Astro.props;
+const code = Astro.params.code as string;
+const segments = dir.split('/').filter(Boolean);
+const title = segments.length > 0 ? segments[segments.length - 1] : 'I tuoi materiali';
+const description =
+  segments.length === 0
+    ? `Materiale assegnato al codice ${code}.`
+    : `Contenuto della cartella ${title}.`;
+
+const crumbs: BreadcrumbItem[] = [
+  { label: 'Materiale riservato', href: withBase('/') },
+  { label: code, href: withBase(`/${code}/`) },
+  ...segments.map((segment, index) => {
+    const relative = segments.slice(0, index + 1).join('/');
+    return {
+      label: segment,
+      href: withBase(`/${code}/${encodePath(relative)}/`),
+    };
+  }),
+];
+---
+
+<PageLayout
+  title={title}
+  eyebrow={segments.length === 0 ? 'Area riservata' : 'Materiale riservato'}
+  description={description}
+>
+  <Breadcrumbs items={crumbs} />
+
+  <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+    <p class="text-sm text-text-secondary">
+      {entries.length === 0
+        ? 'Cartella vuota'
+        : `${entries.length} element${entries.length === 1 ? 'o' : 'i'}`}
+    </p>
+    <code class="rounded-md border border-border bg-bg-secondary px-2 py-1 text-xs text-text-secondary">
+      {code}
+    </code>
+  </div>
+
+  <FileList entries={entries} />
+</PageLayout>

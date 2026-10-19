@@ -1,0 +1,4 @@
+Questa cartella ha uno spazio nel nome.
+
+Serve a verificare che anche i nomi delle cartelle siano codificati
+correttamente nell'URL e nel breadcrumb.
