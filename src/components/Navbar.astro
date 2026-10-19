@@ -1,0 +1,32 @@
+---
+import { MAIN_SITE_URL } from '@/consts';
+import { withBase } from '@/utils/base';
+
+export interface Props {
+  siteName: string;
+  areaName: string;
+}
+
+const { siteName, areaName } = Astro.props;
+---
+
+<header class="sticky top-0 z-[var(--z-sticky)] h-[var(--nav-height)] border-b border-border bg-[var(--color-surface)] backdrop-blur-[12px]">
+  <nav aria-label="Navigazione principale" class="h-full">
+    <div class="relative mx-auto flex h-full max-w-[72rem] items-center px-[var(--space-lg)]">
+      <a href={withBase('/')} class="text-lg font-bold text-text no-underline">{siteName}</a>
+      <span class="ml-3 hidden text-sm font-medium text-text-secondary sm:inline" aria-hidden="true">
+        {areaName}
+      </span>
+
+      <div class="ml-auto flex items-center gap-[var(--space-sm)]">
+        <a
+          href={MAIN_SITE_URL}
+          class="hidden rounded-[var(--radius-lg)] px-3 py-1.5 text-sm font-medium text-text-secondary no-underline transition-all duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-bg-secondary hover:text-text sm:inline"
+        >
+          Sito principale
+        </a>
+        <slot />
+      </div>
+    </div>
+  </nav>
+</header>

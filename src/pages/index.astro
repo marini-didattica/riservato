@@ -1,0 +1,39 @@
+---
+import Card from '@/components/Card.astro';
+import Button from '@/components/Button.astro';
+import { AREA_NAME, SITE_DESCRIPTION, MAIN_SITE_URL } from '@/consts';
+import PageLayout from '@/layouts/PageLayout.astro';
+---
+
+<PageLayout title={AREA_NAME} eyebrow="Marini didattica" description="Materiali didattici in sola lettura, raccolti per studente.">
+  <div class="flex flex-wrap gap-6">
+    <Card class="min-w-[min(100%,17rem)] grow basis-[17rem]">
+      <h2 class="mb-2 text-xl font-bold">Accesso con codice</h2>
+      <p class="leading-relaxed text-text-secondary">
+        Ogni studente riceve un codice personale. Il codice apre la propria cartella di materiali,
+        senza bisogno di account o password.
+      </p>
+    </Card>
+
+    <Card class="min-w-[min(100%,17rem)] grow basis-[17rem]">
+      <h2 class="mb-2 text-xl font-bold">Solo consultazione</h2>
+      <p class="leading-relaxed text-text-secondary">
+        I file sono in sola lettura: puoi aprire e scaricare dispense, esercizi e PDF compilati.
+        Non puoi modificare il materiale originale.
+      </p>
+    </Card>
+
+    <Card class="min-w-[min(100%,17rem)] grow basis-[17rem]">
+      <h2 class="mb-2 text-xl font-bold">Materiale aggiornato</h2>
+      <p class="leading-relaxed text-text-secondary">
+        Il contenuto viene compilato e pubblicato automaticamente, così ogni aggiornamento arriva
+        subito nella cartella giusta.
+      </p>
+    </Card>
+  </div>
+
+  <div class="mt-10 flex flex-wrap items-center gap-4">
+    <Button href={MAIN_SITE_URL} variant="secondary">Torna al sito principale</Button>
+    <p class="text-sm text-text-secondary">{SITE_DESCRIPTION}</p>
+  </div>
+</PageLayout>
