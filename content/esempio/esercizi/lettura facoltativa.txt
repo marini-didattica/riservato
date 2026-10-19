@@ -1,4 +1,0 @@
-Un file con uno spazio nel nome.
-
-Serve a verificare che i link ai file siano codificati correttamente
-(lo spazio deve diventare %20 nell'URL).

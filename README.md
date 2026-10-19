@@ -31,8 +31,8 @@ contiene i dati dello studente e il codice di accesso.
 
 ```json
 {
-  "esempio": {
-    "slug": "PRV23456",
+  "nome-cognome": {
+    "slug": "ABCD2345",
     "owner-first-names": ["Billy"],
     "owner-last-names": ["Jane"],
     "owner-slug": "billy-jane"
@@ -57,9 +57,9 @@ pubblicabili in `public/files/<cartella>/`. La build di Astro genera poi una
 pagina per ogni cartella:
 
 ```text
-/riservato/PRV23456/
-/riservato/PRV23456/esercizi/
-/riservato/files/esempio/esercizi/istruzioni.txt
+/riservato/ABCD2345/
+/riservato/ABCD2345/esercizi/
+/riservato/files/nome-cognome/esercizi/istruzioni.txt
 ```
 
 Le estensioni servibili sono elencate in `scripts/build-content.ts`. I sorgenti
@@ -73,8 +73,8 @@ comprime in un archivio ZIP al momento del click. In questo modo non ci sono ZIP
 duplicati nel deployment di GitHub Pages e il limite di spazio del sito resta
 quello dei file originali.
 
-La voce `esempio` in `students.json` e la cartella `content/esempio/` sono solo
-una demo: puoi rimuoverle quando carichi il materiale reale.
+Ogni cartella con dei file sotto `content/` deve comparire in `students.json`: la
+build si interrompe se trova materiale in una cartella non elencata.
 
 ## Deploy
 
