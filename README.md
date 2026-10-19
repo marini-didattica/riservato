@@ -50,6 +50,17 @@ nel browser (`.html`, `.js`) non vengono pubblicati.
 La cartella `content/esempio/` e la voce `PRV23456` sono solo una demo: puoi
 rimuoverle quando carichi il materiale reale.
 
+## Deploy
+
+Ogni push su `main` avvia `.github/workflows/deploy.yml`, che:
+
+1. installa le dipendenze con Bun;
+2. esegue `bun run build` (validazione del manifest, staging dei file, build Astro);
+3. pubblica `dist/` su GitHub Pages.
+
+Il sito è raggiungibile su
+[marini-didattica.github.io/riservato](https://marini-didattica.github.io/riservato/).
+
 ## Struttura
 
 ```text
