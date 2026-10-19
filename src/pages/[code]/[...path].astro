@@ -36,7 +36,7 @@ function toZipSegment(value: string): string {
 }
 
 const zipName = `${[student['owner-slug'], ...segments].map(toZipSegment).join('-')}.zip`;
-const downloadLabel = segments.length === 0 ? 'Scarica tutto' : 'Scarica cartella';
+const downloadLabel = 'Scarica tutto';
 
 const crumbs: BreadcrumbItem[] = [
   { label: 'Materiale riservato', href: AREA_URL },
@@ -62,6 +62,19 @@ const parentHref =
   eyebrow={segments.length === 0 ? 'Area riservata' : 'Materiale riservato'}
   description={description}
 >
+  <Fragment slot="description">
+    {segments.length === 0 ? (
+      <Fragment>
+        Materiale di {student.owner}, assegnato al codice{' '}
+        <code class="rounded-md border border-border bg-bg-secondary px-2 py-0.5 text-xs text-text-secondary">
+          {code}
+        </code>.
+      </Fragment>
+    ) : (
+      description
+    )}
+  </Fragment>
+
   <div class="mb-6 flex items-center gap-2">
     {parentHref && <BackLink href={parentHref} />}
     <Breadcrumbs items={crumbs} />
@@ -79,7 +92,7 @@ const parentHref =
           id="download-folder"
           type="button"
           data-zip-name={zipName}
-          class="inline-flex items-center gap-2 rounded-md border border-border px-4 py-2 text-sm font-semibold text-text transition-colors hover:bg-bg-secondary disabled:cursor-wait disabled:opacity-60"
+          class="inline-flex cursor-pointer items-center gap-2 rounded-md border border-border px-4 py-2 text-sm font-semibold text-text transition-colors hover:bg-bg-secondary disabled:cursor-wait disabled:opacity-60"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -100,9 +113,6 @@ const parentHref =
           <span data-download-label>{downloadLabel}</span>
         </button>
       )}
-      <code class="rounded-md border border-border bg-bg-secondary px-2 py-1 text-xs text-text-secondary">
-        {code}
-      </code>
     </div>
   </div>
 
