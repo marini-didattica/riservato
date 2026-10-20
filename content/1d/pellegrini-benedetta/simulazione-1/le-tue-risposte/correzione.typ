@@ -2,7 +2,7 @@
 // typst compile --root . content/1d/pellegrini-benedetta/simulazione-1/le-tue-risposte/correzione.typ /tmp/pellegrini-benedetta.pdf
 
 #import "../../../../typst-theme/src/lib.typ": theme
-#import "../../../../typst-components/src/lib.typ": intestazione-correzione, risposta, commento
+#import "../../../../typst-components/src/lib.typ": intestazione-correzione, risposta, commento, griglia-correzione
 
 #set document(title: "Correzione — Simulazione 1 — Benedetta Pellegrini", author: "Marini Mattia")
 #show: doc => theme(doc, footer-text: "Correzione — Simulazione 1")
@@ -78,3 +78,8 @@
 #risposta(none, category: "S", tag: "Snippet", title: [Terzo frammento], points: 10, score: 0, diff: 2)
 
 #v(1.1em)
+
+
+= Riepilogo dei punteggi
+
+#griglia-correzione()

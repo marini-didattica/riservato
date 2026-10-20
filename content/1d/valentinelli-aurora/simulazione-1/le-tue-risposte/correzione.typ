@@ -2,7 +2,7 @@
 // typst compile --root . content/1d/valentinelli-aurora/simulazione-1/le-tue-risposte/correzione.typ /tmp/valentinelli-aurora.pdf
 
 #import "../../../../typst-theme/src/lib.typ": theme
-#import "../../../../typst-components/src/lib.typ": intestazione-correzione, risposta, commento
+#import "../../../../typst-components/src/lib.typ": intestazione-correzione, risposta, commento, griglia-correzione
 
 #set document(title: "Correzione — Simulazione 1 — Aurora Valentinelli", author: "Marini Mattia")
 #show: doc => theme(doc, footer-text: "Correzione — Simulazione 1")
@@ -98,3 +98,8 @@
 ]
 
 #v(1.1em)
+
+
+= Riepilogo dei punteggi
+
+#griglia-correzione()
