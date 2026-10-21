@@ -2,13 +2,19 @@
 
 Riferimento: `marini-mattia/` (110/110).
 
+Le correzioni individuali sono in
+`content/1d/<studente>/simulazione-1/le-tue-risposte/correzione.typ`. Il voto in
+decimi si ottiene da `min(totale, 100) / 10`: i primi 100 punti valgono il voto,
+mentre i 10 punti successivi valgono la lode. La sufficienza (6/10) corrisponde
+quindi a 60/110.
+
 ## Criteri di valutazione
 
 - **Teoria (20 punti):** domanda 1 = 7, domanda 2 = 8, domanda 3 = 5.
 - **Scrittura del codice (60 punti):** esercizio 1 = 10, esercizio 2 = 20, esercizio 3 = 30.
 - **Lettura del codice (30 punti):** frammento 1 = 10, frammento 2 = 10, frammento 3 = 10.
 
-Ho assegnato crediti parziali quando l'impostazione logica era corretta, ma ho penalizzato codice non eseguibile, output errato o soluzioni non generalizzabili. Le parti mancanti valgono 0. Per riferimento, la sufficienza (6/10) corrisponde a 66/110.
+Ho assegnato crediti parziali quando l'impostazione logica era corretta, ma ho penalizzato codice non eseguibile, output errato o soluzioni non generalizzabili. Le parti mancanti valgono 0. Per riferimento, la sufficienza (6/10) corrisponde a 60/110.
 
 ## Riepilogo
 
@@ -37,7 +43,7 @@ Ho assegnato crediti parziali quando l'impostazione logica era corretta, ma ho p
 
 ### Osservazioni generali
 
-- Solo `campi-gabriele` e `Valentinelli-Aurora` hanno consegnato tutte e tre le parti; nessuno raggiunge la sufficienza (66/110).
+- Solo `campi-gabriele` e `Valentinelli-Aurora` hanno consegnato tutte e tre le parti; nessuno raggiunge la sufficienza (60/110).
 - La parte di lettura è quella più frequentemente assente o incompleta.
 - Gli errori ricorrenti nel codice sono: liste fisse al posto di `n`, off-by-one (`i < n` invece di `i <= n`), cicli infiniti per mancato incremento e confusione tra `%` e `/`.
 - In teoria ricorrono confusione tra RAM e memoria di massa, descrizioni generiche del codice binario e definizioni vaghe di istruzione/instruction set.
