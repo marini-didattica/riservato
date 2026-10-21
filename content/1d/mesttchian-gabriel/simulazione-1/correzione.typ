@@ -9,7 +9,6 @@
 
 #intestazione-correzione(
   "Gabriel Mesttchian",
-  30,
   title: "Correzione — Simulazione 1",
   subtitle: "Classe 1D · 20 ottobre 2026",
 )
