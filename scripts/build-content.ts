@@ -1,8 +1,11 @@
-import type { Dirent } from 'node:fs';
+import { execFile } from 'node:child_process';
 import { copyFile, mkdir, readFile, readdir, rm, stat } from 'node:fs/promises';
 import path from 'node:path';
+import { promisify } from 'node:util';
 import { studentOwnerSlug } from '../src/lib/students';
 import type { Students } from '../src/types';
+
+const execFileAsync = promisify(execFile);
 
 const root = process.cwd();
 const contentDir = path.join(root, 'content');
@@ -16,8 +19,11 @@ const OWNER_SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 /**
  * Extensions that are safe to publish as-is.
  *
- * Source files (`.typ`, `.tex`), LaTeX build artifacts and anything that can
- * execute in the browser (`.html`, `.js`) are deliberately excluded.
+ * Typst sources are handled separately: every `.typ` file is compiled to PDF
+ * during the content build. A `.typ` file whose name starts with `_` is not
+ * compiled and is published with the underscore removed instead. Other source
+ * files (`.tex`), LaTeX build artifacts and anything that can execute in the
+ * browser (`.html`, `.js`) are deliberately excluded.
  */
 const ALLOWED_EXTENSIONS = new Set([
   '.pdf',
@@ -205,7 +211,6 @@ async function collectFiles(dir: string): Promise<string[]> {
   for (const entry of entries) {
     if (
       entry.name.startsWith('.') ||
-      entry.name.startsWith('_') ||
       IGNORED_DIRECTORIES.has(entry.name) ||
       IGNORED_NAMES.has(entry.name)
     ) {
@@ -215,13 +220,48 @@ async function collectFiles(dir: string): Promise<string[]> {
     const fullPath = path.join(dir, entry.name);
 
     if (entry.isDirectory()) {
+      if (entry.name.startsWith('_')) continue;
+
       files.push(...(await collectFiles(fullPath)));
     } else if (entry.isFile()) {
+      // Files starting with `_` are collected: `_name.typ` is a source file
+      // that must be published as `name.typ` after the compilation step.
       files.push(fullPath);
     }
   }
 
   return files;
+}
+
+async function compileTypst(source: string, destination: string) {
+  await mkdir(path.dirname(destination), { recursive: true });
+
+  try {
+    // Use content/ as the Typst root so documents can import the shared
+    // typst-theme and typst-components submodules with relative paths.
+    await execFileAsync('typst', ['compile', '--root', contentDir, source, destination], {
+      cwd: root,
+    });
+  } catch (error) {
+    const failure = error as NodeJS.ErrnoException & {
+      stdout?: string;
+      stderr?: string;
+    };
+
+    if (failure.code === 'ENOENT') {
+      fail(
+        'Typst non è installato: serve il comando `typst` per compilare i sorgenti .typ. ' +
+          'In CI viene installato da typst-community/setup-typst.',
+      );
+    }
+
+    const details = (failure.stderr || failure.stdout || failure.message).trim();
+
+    fail(
+      `Compilazione Typst fallita per ${path.relative(root, source)}` +
+        (details ? `:\n${details}` : '.'),
+    );
+  }
 }
 
 async function buildContent() {
@@ -232,7 +272,11 @@ async function buildContent() {
   await mkdir(publicFilesDir, { recursive: true });
 
   let copied = 0;
+  let compiled = 0;
+  let published = 0;
   const skipped = new Set<string>();
+  const compileJobs: Array<{ source: string; destination: string }> = [];
+  const publishJobs: Array<{ source: string; destination: string }> = [];
 
   for (const [folder, student] of Object.entries(students)) {
     const sourceRoot = path.join(contentDir, folder);
@@ -243,13 +287,39 @@ async function buildContent() {
 
     for (const source of files) {
       const extension = path.extname(source).toLowerCase();
+      const name = path.basename(source);
+      const relative = path.relative(sourceRoot, source);
+
+      if (extension === '.typ') {
+        if (name.startsWith('_')) {
+          // Escape hatch: `_name.typ` is not compiled and is published as
+          // `name.typ`. Queued for after the compilation pass.
+          publishJobs.push({
+            source,
+            destination: path.join(destinationRoot, path.dirname(relative), name.slice(1)),
+          });
+        } else {
+          compileJobs.push({
+            source,
+            destination: path.join(
+              destinationRoot,
+              `${relative.slice(0, -extension.length)}.pdf`,
+            ),
+          });
+        }
+
+        continue;
+      }
+
+      if (name.startsWith('_')) {
+        continue;
+      }
 
       if (!ALLOWED_EXTENSIONS.has(extension)) {
         skipped.add(extension || '(senza estensione)');
         continue;
       }
 
-      const relative = path.relative(sourceRoot, source);
       const destination = path.join(destinationRoot, relative);
 
       await mkdir(path.dirname(destination), { recursive: true });
@@ -263,6 +333,21 @@ async function buildContent() {
     );
   }
 
+  // Compile only after every existing file has been staged, so a compiled PDF
+  // replaces an existing PDF with the same name.
+  for (const { source, destination } of compileJobs) {
+    await compileTypst(source, destination);
+    compiled += 1;
+  }
+
+  // Publish `_name.typ` only after compiling: when both `name.typ` and
+  // `_name.typ` exist, the output is `name.pdf` plus `name.typ`.
+  for (const { source, destination } of publishJobs) {
+    await mkdir(path.dirname(destination), { recursive: true });
+    await copyFile(source, destination);
+    published += 1;
+  }
+
   if (skipped.size > 0) {
     console.log(
       `[content] Estensioni ignorate: ${[...skipped].sort().join(', ')}. ` +
@@ -270,7 +355,10 @@ async function buildContent() {
     );
   }
 
-  console.log(`[content] ${copied} file copiati in public/files/.`);
+  console.log(
+    `[content] ${copied} file copiati, ${compiled} PDF compilati, ` +
+      `${published} sorgenti .typ pubblicati in public/files/.`,
+  );
 }
 
 await buildContent();
