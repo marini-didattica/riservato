@@ -23,6 +23,10 @@ bun run build    # genera dist/
 bun run preview  # anteprima della build
 ```
 
+Per compilare i documenti Typst serve il comando `typst` nel `PATH`
+([installazione](https://github.com/typst/typst#installation)); la CI usa la
+versione `0.15.1`.
+
 ## Materiale e codici
 
 Il materiale vive in `content/<cartella>/`. Il file `students.json` descrive
@@ -63,8 +67,30 @@ pagina per ogni cartella:
 ```
 
 Le estensioni servibili sono elencate in `scripts/build-content.ts`. I sorgenti
-`.typ` e `.tex`, i file temporanei di LaTeX e i file che possono essere eseguiti
-nel browser (`.html`, `.js`) non vengono pubblicati.
+`.tex`, i file temporanei di LaTeX e i file che possono essere eseguiti nel
+browser (`.html`, `.js`) non vengono pubblicati.
+
+### Documenti Typst
+
+Ogni file `.typ` nelle cartelle elencate in `students.json` viene compilato in un
+PDF con lo stesso nome e nella stessa posizione:
+
+```text
+content/1d/angeli-lorenzo/simulazione-1/correzione.typ
+  -> public/files/1d/angeli-lorenzo/simulazione-1/correzione.pdf
+```
+
+Se un PDF con lo stesso nome esiste già nel repository, la versione compilata lo
+sostituisce. I sorgenti `.typ` compilati non vengono pubblicati.
+
+Per pubblicare un sorgente `.typ` senza compilarlo, anteponi `_` al nome:
+`_esempio.typ` diventa `esempio.typ` nel sito. Il prefisso viene rimosso solo
+nell'output, quindi nel repository il file mantiene il nome originale. Se nella
+stessa cartella esistono sia `esempio.typ` sia `_esempio.typ`, il sito pubblica
+`esempio.pdf` (compilato da `esempio.typ`) e `esempio.typ` (da `_esempio.typ`).
+
+La compilazione usa `content/` come root Typst, così i documenti possono
+importare `typst-theme` e `typst-components` con percorsi relativi.
 
 Ogni pagina di cartella include un pulsante **Scarica tutto**; ogni riga di
 cartella o file ha inoltre un'icona di download a destra. Il download viene
@@ -81,8 +107,10 @@ build si interrompe se trova materiale in una cartella non elencata.
 Ogni push su `main` avvia `.github/workflows/deploy.yml`, che:
 
 1. installa le dipendenze con Bun;
-2. esegue `bun run build` (validazione di `students.json`, staging dei file, build Astro);
-3. pubblica `dist/` su GitHub Pages.
+2. installa Typst;
+3. esegue `bun run build` (validazione di `students.json`, staging dei file,
+   compilazione dei documenti Typst, build Astro);
+4. pubblica `dist/` su GitHub Pages.
 
 Il sito è raggiungibile su
 [marini-didattica.github.io/riservato](https://marini-didattica.github.io/riservato/).
