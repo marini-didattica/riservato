@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Area riservata spostata — Marini didattica</title>
+    <link
+      rel="canonical"
+      href="https://materiale.didattica.mattia-marini.com/private/"
+    />
+    <script>
+      (() => {
+        const BASE_PATH = "/riservato";
+        const DESTINATION = "https://materiale.didattica.mattia-marini.com";
+        const folders = {"1c/bertoldi-emma":"ZUS6V369","1c/bottea-sofia":"AP5AES8S","1c/bruni-martin":"SSVGW2B6","1c/caserotti-martin":"4LQLV9QZ","1c/fantelli-federico":"WDFN7TMZ","1c/ferrari-thomas":"ZYCTLHQ8","1c/fox-isabella":"35GPDA44","1c/grad-cristian-grigore":"5X2PGFLY","1c/inama-giulia":"CZ55GEER","1c/larcher-diego":"J8LH9TSQ","1c/melis-nicolò":"R888MY3J","1c/orrico-alessio":"3CLW5Y2N","1c/pizzolla-francesco":"HJZLU52M","1c/rizzi-lorenzo":"M5JYN2UY","1c/telini-greta":"GDWNJ5PU","1c/valentini-luca":"ZMVR45KK","1c/ymeraj-leonard":"HL9WH2JV","1c/zaninetti-sara":"BK5WA2LV","1d/angeli-lorenzo":"LFD4DNSD","1d/barbaro-arturo":"4K7FT6RH","1d/bertolini-florian":"GHEVZ9J6","1d/branz-federico":"S6U9Y8ER","1d/campi-gabriele":"JETG8KTV","1d/dalpiaz-damian":"B2F2WYJA","1d/docuz-sara-maria":"EVRZZTU5","1d/fondriest-milena":"YVT8R6D3","1d/laccona-alessandro-massimo":"4HNRZS5B","1d/lorenzoni-chris":"Y6UN5QGB","1d/malanotti-stefano":"CUHAPA2D","1d/melis-riccardo":"E3Y8D8HC","1d/mesttchian-gabriel":"V8VLYPAV","1d/midjaiti-elif":"8FD5XMD2","1d/pellegrini-benedetta":"UDC8VB4P","1d/pupez-matei":"GV7HRQ5F","1d/quatrale-lorenzo":"BQJXDLHN","1d/rosati-martino":"CCUQ89FX","1d/valentinelli-aurora":"2ZVE8KPS","2c/battocletti-alessandro":"NZ7AGR7K","2c/bonetti-alessandra":"Y8T8RSXC","2c/dagostin-davide":"LRJVWN8M","2c/dal-savio-daniele":"C8ZJHG8A","2c/ferrari-carlo":"K5ARKZ2L","2c/filippi-renato":"J6L3P9MG","2c/lorenzi-diego":"LVFPWY9A","2c/mezzena-nicolò":"K5NEAEB9","2c/moscon-laura":"U66WKDVV","2c/panizza-stella":"GD9DTRJN","2c/penasa-gemma":"XNFAYRTX","2c/perazzolli-gianluca":"ABKN2S9F","2c/pilloni-francesco":"SEBHZ8WN","2c/pretti-agata":"ZFZBJHD3","2c/sesureac-milena":"8ZTEVLVD","2c/veronesi-davide":"TTGJ4X8Q","2c/visintainer-filippo":"WMDFEEQZ","2c/vurchio-riccardo":"3RTCG3GG","2c/zambelli-giovanni":"5NWHBFAP","2c/zuech-gabriele":"UBN5K4HU"};
+
+        function decode(value) {
+          try {
+            return decodeURIComponent(value);
+          } catch {
+            return value;
+          }
+        }
+
+        function modernize(path) {
+          return path
+            .split("/")
+            .map((segment) =>
+              segment === "simulazione-1" ? "esercitazione-1" : segment,
+            )
+            .join("/");
+        }
+
+        function resolveFiles(rest) {
+          const decoded = decode(rest);
+          let match = "";
+          for (const folder of Object.keys(folders)) {
+            if (
+              (decoded === folder || decoded.startsWith(folder + "/")) &&
+              folder.length > match.length
+            ) {
+              match = folder;
+            }
+          }
+          return match
+            ? "/raw/private/" + folders[match] + decoded.slice(match.length)
+            : "/private/";
+        }
+
+        const path = location.pathname.startsWith(BASE_PATH)
+          ? location.pathname.slice(BASE_PATH.length) || "/"
+          : location.pathname;
+
+        let targetPath = "/private/";
+        if (path.startsWith("/files/")) {
+          targetPath = resolveFiles(path.slice("/files/".length));
+        } else if (path !== "/") {
+          targetPath = "/private" + path;
+        }
+
+        location.replace(
+          DESTINATION +
+            encodeURI(modernize(targetPath)) +
+            location.search +
+            location.hash,
+        );
+      })();
+    </script>
+  </head>
+  <body>
+    <p>
+      L'area riservata si è spostata su
+      <a href="https://materiale.didattica.mattia-marini.com/private/"
+        >materiale.didattica.mattia-marini.com</a
+      >.
+    </p>
+  </body>
+</html>
